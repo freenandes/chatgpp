@@ -143,7 +143,7 @@ export const ChatInterface = () => {
           {conversations.map((conv) => (
             <Card 
               key={conv.id}
-              className={`p-3 mb-2 cursor-pointer hover:bg-accent transition-colors ${
+              className={`group p-3 mb-2 cursor-pointer hover:bg-accent transition-colors ${
                 activeConversationId === conv.id ? 'bg-accent border-primary' : ''
               }`}
               onClick={() => setActiveConversationId(conv.id)}
