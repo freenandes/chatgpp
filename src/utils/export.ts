@@ -59,7 +59,7 @@ export const exportUtils = {
     link.href = url;
     const sanitizedTitle = conversation.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const dateForFilename = formatDateForFilename(conversation.updatedAt);
-    link.download = `${sanitizedTitle}-${dateForFilename}.md`;
+    link.download = `${dateForFilename}-${sanitizedTitle}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
