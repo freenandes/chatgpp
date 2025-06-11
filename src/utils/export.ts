@@ -16,15 +16,19 @@ interface Conversation {
 
 export const exportUtils = {
   exportAsMarkdown: (conversation: Conversation): void => {
+    const formatDateISO = (date: Date) => {
+      return date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM format
+    };
+
     const formatDate = (date: Date) => {
       return date.toLocaleString();
     };
 
-    let markdown = `# ${conversation.title}\n\n`;
-    markdown += `**Created:** ${formatDate(conversation.createdAt)}\n`;
-    markdown += `**Last Updated:** ${formatDate(conversation.updatedAt)}\n`;
-    markdown += `**Messages:** ${conversation.messages.length}\n\n`;
-    markdown += '---\n\n';
+    let markdown = `---\n`;
+    markdown += `date: ${formatDateISO(conversation.createdAt)}\n`;
+    markdown += `modified: ${formatDateISO(conversation.updatedAt)}\n`;
+    markdown += `title: "${conversation.title}"\n`;
+    markdown += `---\n\n`;
 
     conversation.messages.forEach((message, index) => {
       const roleIcon = message.role === 'human' ? '👤' : '🤖';
@@ -52,10 +56,22 @@ export const exportUtils = {
   },
 
   exportAllConversations: (conversations: Conversation[]): void => {
-    let markdown = `# All Conversations Export\n\n`;
-    markdown += `**Exported:** ${new Date().toLocaleString()}\n`;
+    const formatDateISO = (date: Date) => {
+      return date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM format
+    };
+
+    const formatDate = (date: Date) => {
+      return date.toLocaleString();
+    };
+
+    const now = new Date();
+    let markdown = `---\n`;
+    markdown += `date: ${formatDateISO(now)}\n`;
+    markdown += `modified: ${formatDateISO(now)}\n`;
+    markdown += `title: "All Conversations Export"\n`;
+    markdown += `---\n\n`;
+
     markdown += `**Total Conversations:** ${conversations.length}\n\n`;
-    markdown += '---\n\n';
 
     conversations.forEach((conversation, convIndex) => {
       markdown += `# ${conversation.title}\n\n`;
