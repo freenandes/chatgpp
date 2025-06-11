@@ -1,4 +1,3 @@
-
 interface Message {
   id: string;
   content: string;
@@ -22,6 +21,15 @@ export const exportUtils = {
 
     const formatDate = (date: Date) => {
       return date.toLocaleString();
+    };
+
+    const formatDateForFilename = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}${month}${day}${hours}${minutes}`;
     };
 
     let markdown = `---\n`;
@@ -48,7 +56,9 @@ export const exportUtils = {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${conversation.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.md`;
+    const sanitizedTitle = conversation.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const dateForFilename = formatDateForFilename(conversation.updatedAt);
+    link.download = `${sanitizedTitle}-${dateForFilename}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
