@@ -1,6 +1,5 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Download, Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { Send, User, Bot, Download, Plus, MessageSquare, Trash2, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -128,14 +127,42 @@ export const ChatInterface = () => {
     });
   };
 
+  const exportAllConversations = async () => {
+    if (conversations.length === 0) {
+      toast({
+        title: "No conversations to export",
+        description: "Create some conversations first.",
+      });
+      return;
+    }
+    
+    try {
+      await exportUtils.exportAllConversationsAsZip(conversations);
+      toast({
+        title: "Export successful",
+        description: `${conversations.length} conversations exported as ZIP file.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "There was an error creating the ZIP file.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 bg-muted/30 border-r flex flex-col overflow-hidden`}>
-        <div className="p-4 border-b">
+        <div className="p-4 border-b space-y-2">
           <Button onClick={createNewConversation} className="w-full" variant="outline">
             <Plus className="w-4 h-4 mr-2" />
             New Conversation
+          </Button>
+          <Button onClick={exportAllConversations} className="w-full" variant="outline">
+            <Archive className="w-4 h-4 mr-2" />
+            Export All as ZIP
           </Button>
         </div>
         

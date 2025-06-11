@@ -1,3 +1,5 @@
+import JSZip from 'jszip';
+
 interface Message {
   id: string;
   content: string;
@@ -114,6 +116,67 @@ export const exportUtils = {
     const link = document.createElement('a');
     link.href = url;
     link.download = `all_conversations_${Date.now()}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  },
+
+  exportAllConversationsAsZip: async (conversations: Conversation[]): Promise<void> => {
+    const zip = new JSZip();
+    
+    const formatDateISO = (date: Date) => {
+      return date.toISOString().slice(0, 16);
+    };
+
+    const formatDate = (date: Date) => {
+      return date.toLocaleString();
+    };
+
+    const formatDateForFilename = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      return `${year}${month}${day}${hours}${minutes}${seconds}`;
+    };
+
+    // Add each conversation as a separate markdown file
+    conversations.forEach((conversation) => {
+      let markdown = `---\n`;
+      markdown += `date: ${formatDateISO(conversation.createdAt)}\n`;
+      markdown += `modified: ${formatDateISO(conversation.updatedAt)}\n`;
+      markdown += `title: "${conversation.title}"\n`;
+      markdown += `---\n\n`;
+
+      conversation.messages.forEach((message, index) => {
+        const roleIcon = message.role === 'human' ? '👤' : '🤖';
+        const roleLabel = message.role === 'human' ? 'Human' : 'Assistant';
+        
+        markdown += `## ${roleIcon} ${roleLabel}\n`;
+        markdown += `*${formatDate(message.timestamp)}*\n\n`;
+        markdown += `${message.content}\n\n`;
+        
+        if (index < conversation.messages.length - 1) {
+          markdown += '---\n\n';
+        }
+      });
+
+      const sanitizedTitle = conversation.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      const dateForFilename = formatDateForFilename(conversation.updatedAt);
+      const filename = `${dateForFilename}-${sanitizedTitle}.md`;
+      
+      zip.file(filename, markdown);
+    });
+
+    // Generate zip file and download
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `conversations_export_${Date.now()}.zip`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
