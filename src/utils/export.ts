@@ -171,12 +171,14 @@ export const exportUtils = {
       zip.file(filename, markdown);
     });
 
-    // Generate zip file and download
+    // Generate zip file and download with new filename format
     const content = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(content);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `conversations_export_${Date.now()}.zip`;
+    const now = new Date();
+    const zipTimestamp = formatDateForFilename(now);
+    link.download = `${zipTimestamp}-conversations_export.zip`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
