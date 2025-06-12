@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/self-chat-scribe-markdown/' : '/',
+  base: mode === 'production' ? '/chatgpp/' : '/',
   server: {
     host: "::",
     port: 8080,
